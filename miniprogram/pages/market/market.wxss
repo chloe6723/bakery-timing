@@ -1,0 +1,1 @@
+.market-item{display:flex;align-items:center;gap:18rpx}.item-icon{width:90rpx;height:90rpx;border:3rpx solid #9b7956;border-radius:24rpx;display:flex;align-items:center;justify-content:center;font-size:42rpx}.buy{border:0;background:#f2c56b;border-radius:20rpx;padding:14rpx 18rpx;color:#4d3828;font-weight:800}

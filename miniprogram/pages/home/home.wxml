@@ -1,0 +1,30 @@
+<view class="home">
+  <view class="home-top">
+    <button class="top-icon" bindtap="openCatalog">▦</button>
+    <view class="coin-pill">● {{coins}}</view>
+    <view class="grow"></view>
+    <button class="top-icon" bindtap="openSettings">⚙</button>
+  </view>
+  <image class="hero" src="/assets/bakeco-home-visual.jpg" mode="aspectFill"></image>
+  <view class="hero-shade"></view>
+  <view class="home-copy">
+    <view class="home-title">贝可的面包房</view>
+    <view class="quote">“今天，我们也让时间慢慢发酵吧。”</view>
+  </view>
+  <view class="picker-card">
+    <scroll-view class="scroll-x" scroll-x="true">
+      <view class="minute-row">
+        <button wx:for="{{recipes}}" wx:key="minutes" class="minute {{minutes === item.minutes ? 'active' : ''}}" data-minutes="{{item.minutes}}" bindtap="chooseMinutes">{{item.minutes}}</button>
+      </view>
+    </scroll-view>
+    <view class="custom-time"><text>自定义 {{minutes}} 分钟</text><text class="muted">向下匹配配方</text></view>
+    <slider min="30" max="180" step="5" value="{{minutes}}" activeColor="#93A26C" backgroundColor="#E3D2B7" block-color="#F2C56B" bindchange="slideMinutes" />
+    <view class="row between recipe-line"><view><view class="section-title">{{recipe.name}}</view><view class="muted">净专注 {{minutes}} 分钟</view></view><view class="bread-mark">◒</view></view>
+    <button class="primary-button" bindtap="startFocus">开始制作</button>
+  </view>
+  <view class="home-tabs">
+    <button bindtap="openLedger"><text>▥</text><label>店长台账</label></button>
+    <button bindtap="openOrders"><text>▤</text><label>订单管理</label></button>
+    <button bindtap="openMarket"><text>◇</text><label>集市</label></button>
+  </view>
+</view>

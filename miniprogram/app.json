@@ -1,0 +1,29 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/ledger/ledger",
+    "pages/orders/orders",
+    "pages/market/market",
+    "pages/catalog/catalog",
+    "pages/settings/settings",
+    "pages/focus/focus"
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "backgroundColor": "#F7EEDC",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#806C57",
+    "selectedColor": "#57412F",
+    "backgroundColor": "#FFF9EB",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/ledger/ledger", "text": "店长台账" },
+      { "pagePath": "pages/orders/orders", "text": "订单管理" },
+      { "pagePath": "pages/market/market", "text": "集市" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

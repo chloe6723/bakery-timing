@@ -1,0 +1,1 @@
+{ "desc": "原型页面不参与索引", "rules": [{ "action": "disallow", "page": "*" }] }

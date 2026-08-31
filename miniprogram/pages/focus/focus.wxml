@@ -1,0 +1,13 @@
+<view class="focus-page">
+  <view class="focus-top"><view>{{recipe.name}}</view><view class="stage">{{stageName}}</view></view>
+  <view class="progress"><view style="width:{{progress}}%"></view></view>
+  <view class="focus-center">
+    <view class="bakeco"><view class="ear left"></view><view class="ear right"></view><view class="face">ʕ•ᴥ•ʔ</view><view class="hat">B</view></view>
+    <view class="clock">{{clock}}</view>
+    <view class="focus-quote" wx:if="{{!finished}}">“面团正在安静地长大，我们也一样。”</view>
+    <view class="focus-quote" wx:else>“瞧，它体面地走出了烤箱。”</view>
+  </view>
+  <view class="focus-actions" wx:if="{{!finished}}"><button class="soft-button" wx:if="{{!paused}}" bindtap="pause">暂停</button><button class="primary-button" wx:else bindtap="resume">提前回来</button><button class="soft-button danger" bindtap="askExit">放弃制作</button></view>
+  <view class="focus-actions" wx:else><button class="primary-button" bindtap="goHome">收入储藏架</button></view>
+  <view class="modal-mask" wx:if="{{showExit}}"><view class="exit-card"><view class="section-title">再陪它一小会儿？</view><view class="muted">{{recipe.name}}正在{{stageName}}，已经完成 {{progress}}%。贝可已经把烤箱手套准备好了。</view><button class="primary-button" bindtap="continueFocus">继续制作</button><button wx:if="{{rescue}}" class="soft-button" bindtap="rescue">快速出炉 · 1 张券<br/><text>可得到{{rescue.name}}</text></button><button class="text-button" bindtap="abandon">依旧放弃</button></view></view>
+</view>

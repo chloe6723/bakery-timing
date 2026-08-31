@@ -1,0 +1,9 @@
+{
+  "description": "bakery- timing｜贝可的面包房微信小程序原型",
+  "packOptions": { "ignore": [] },
+  "setting": { "es6": true, "postcss": true, "minified": true },
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "projectname": "bakery-timing",
+  "miniprogramRoot": "miniprogram/"
+}
