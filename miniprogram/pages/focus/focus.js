@@ -1,5 +1,6 @@
 const focusService = require('../../services/focus-service')
 const focus = require('../../domain/focus-session')
+const settlementService = require('../../services/settlement-service')
 
 Page({
   data: {
@@ -39,13 +40,22 @@ Page({
   continueFocus() { this.setData({ showExit: false }) },
   abandon() {
     const session = focusService.abandon(Date.now())
+    settlementService.abandon(session, Date.now())
     clearInterval(this.timer)
-    wx.showModal({ title: '贝可收好了', content: `${session.failureItem}已经放进待结算区。`, showCancel: false,
+    wx.showModal({ title: '贝可收好了', content: `${session.failureItem}已经放进仓库，可以稍后到集市兑换猫粮。`, showCancel: false,
       success: () => { focusService.archiveTerminal(session); wx.reLaunch({ url: '/pages/home/home' }) } })
   },
   rescue() {
     if (!this.data.rescue) return
-    wx.showModal({ title: '快速出炉规则待确认', content: `建议消耗 1 张券，获得${this.data.rescue.name}；正常售价出售，但不解锁图鉴。当前骨架暂不执行结算。`, showCancel: false })
+    wx.showModal({ title: '确认快速出炉', content: `消耗 1 张券，获得${this.data.rescue.name}；可以正常出售，但不解锁图鉴。`,
+      success: result => {
+        if (!result.confirm) return
+        const settled = settlementService.rescue(this.data.session, this.data.rescue, Date.now())
+        if (!settled.ok) return wx.showToast({ title: settled.reason === 'NO_TICKET' ? '时间券不足' : '暂时无法快速出炉', icon: 'none' })
+        clearInterval(this.timer)
+        wx.showModal({ title: '快速出炉成功', content: `${settled.bread}已经进入仓库，还剩 ${settled.tickets} 张时间券。`, showCancel: false,
+          success: () => { focusService.archiveTerminal(settled.session); wx.reLaunch({ url: '/pages/home/home' }) } })
+      } })
   },
   pause() {
     if (!this.data.pauseAvailable) return wx.showToast({ title: '每专注满 1 小时可暂停一次', icon: 'none' })
@@ -53,6 +63,19 @@ Page({
   },
   resume() { focusService.resume(Date.now()); this.refresh() },
   skipBreak() { focusService.skipBreak(Date.now()); this.refresh() },
-  finishResult() { const session = this.data.session; focusService.archiveTerminal(session); wx.reLaunch({ url: '/pages/home/home' }) },
+  finishResult() {
+    const session = this.data.session
+    if (session.status === focus.SESSION_STATUS.ABANDONED) settlementService.abandon(session, Date.now())
+    const result = session.status === focus.SESSION_STATUS.COMPLETED ? settlementService.complete(session, Date.now()) : null
+    if (result && result.delivery && result.delivery.mode === 'auto') {
+      return wx.showModal({ title: '鸽子已经出发', content: `包裹由信使鸽送往客户家，订单收入 ${result.delivery.coins} 金币。`, showCancel: false,
+        success: () => { focusService.archiveTerminal(session); wx.reLaunch({ url: '/pages/home/home' }) } })
+    }
+    if (result && result.delivery && result.delivery.mode === 'manual') {
+      return wx.showModal({ title: '订单已经备好', content: '面包已收入仓库。请到订单管理邀请客人来店取货。', showCancel: false,
+        success: () => { focusService.archiveTerminal(session); wx.switchTab({ url: '/pages/orders/orders' }) } })
+    }
+    focusService.archiveTerminal(session); wx.reLaunch({ url: '/pages/home/home' })
+  },
   goHome() { wx.reLaunch({ url: '/pages/home/home' }) }
 })

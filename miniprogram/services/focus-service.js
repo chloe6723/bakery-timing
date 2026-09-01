@@ -2,12 +2,12 @@ const { matchRecipe, rescueRecipe, buildStages } = require('../domain/recipes')
 const focus = require('../domain/focus-session')
 const store = require('../store/app-store')
 
-function start(targetMinutes, now = Date.now()) {
+function start(targetMinutes, now = Date.now(), context = {}) {
   const active = store.getActiveSession()
   if (active && !focus.isTerminal(active)) return active
   const recipe = matchRecipe(targetMinutes)
   const user = store.getUser()
-  const session = focus.createSession(targetMinutes, recipe, buildStages(recipe, targetMinutes), now, user.mode)
+  const session = focus.createSession(targetMinutes, recipe, buildStages(recipe, targetMinutes), now, user.mode, context)
   store.saveActiveSession(session)
   return session
 }

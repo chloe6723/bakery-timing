@@ -1,6 +1,6 @@
 const KEYS = {
   USER: 'bakeryTiming:user', ECONOMY: 'bakeryTiming:economy', INVENTORY: 'bakeryTiming:inventory',
-  SETTINGS: 'bakeryTiming:settings', ACTIVE_SESSION: 'bakeryTiming:activeSession',
+  SETTINGS: 'bakeryTiming:settings', CATALOG: 'bakeryTiming:catalog', ORDERS: 'bakeryTiming:orders', ACTIVE_SESSION: 'bakeryTiming:activeSession',
   SESSION_HISTORY: 'bakeryTiming:sessionHistory', LEDGER: 'bakeryTiming:ledger'
 }
 function get(key, fallback) {

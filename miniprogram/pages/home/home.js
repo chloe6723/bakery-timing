@@ -2,6 +2,7 @@ const { RECIPES, matchRecipe } = require('../../domain/recipes')
 const focusService = require('../../services/focus-service')
 const economyService = require('../../services/economy-service')
 const focusDomain = require('../../domain/focus-session')
+const settlementService = require('../../services/settlement-service')
 
 Page({
   data: { coins: 1280, minutes: 30, recipe: RECIPES[0], recipes: RECIPES },
@@ -11,7 +12,8 @@ Page({
     if (active && !focusDomain.isTerminal(active)) {
       setTimeout(() => wx.navigateTo({ url: '/pages/focus/focus?resume=1' }), 50)
     } else if (active && active.status === focusDomain.SESSION_STATUS.ABANDONED && active.failureReason === 'FOCUS_MODE_BACKGROUND_TIMEOUT') {
-      wx.showModal({ title: '制作已经停止', content: `专注模式离开超过三分钟，${active.failureItem}已经放进待结算区。`, showCancel: false,
+      settlementService.abandon(active, Date.now())
+      wx.showModal({ title: '制作已经停止', content: `专注模式离开超过三分钟，${active.failureItem}已经放进仓库。`, showCancel: false,
         complete: () => focusService.archiveTerminal(active) })
     }
   },

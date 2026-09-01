@@ -5,7 +5,7 @@ const SESSION_STATUS = {
 const BACKGROUND_GRACE_MS = 3 * 60 * 1000
 const MANUAL_PAUSE_MS = 5 * 60 * 1000
 
-function createSession(targetMinutes, recipe, stages, now = Date.now(), mode = 'healing') {
+function createSession(targetMinutes, recipe, stages, now = Date.now(), mode = 'healing', context = {}) {
   return {
     id: `focus-${now}`, version: 1,
     status: stages[0] && stages[0].focus ? SESSION_STATUS.FOCUSING : SESSION_STATUS.RECIPE_BREAK,
@@ -13,7 +13,7 @@ function createSession(targetMinutes, recipe, stages, now = Date.now(), mode = '
     recipeElapsedMs: 0, stageIndex: 0, stageElapsedMs: 0, pauseCreditsUsed: 0,
     pauseEndsAt: null, resumeStatus: null, backgroundedAt: null,
     lastEvaluatedAt: now, startedAt: now, finishedAt: null,
-    recipe, stages, settlementStatus: 'PENDING'
+    recipe, stages, orderId: context.orderId || null, settlementStatus: 'PENDING'
   }
 }
 
