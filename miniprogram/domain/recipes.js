@@ -38,4 +38,8 @@ function buildStages(recipe, targetMinutes) {
   return stages
 }
 
-module.exports = { RECIPES, matchRecipe, rescueRecipe, buildStages }
+function recipeTimelineMinutes(stages) {
+  return stages.reduce((sum, stage) => sum + stage.minutes, 0)
+}
+
+module.exports = { RECIPES, matchRecipe, rescueRecipe, buildStages, recipeTimelineMinutes }

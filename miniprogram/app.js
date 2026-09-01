@@ -1,8 +1,6 @@
+const focusService = require('./services/focus-service')
+
 App({
-  globalData: {
-    coins: 1280,
-    tickets: 2,
-    bakeryName: '贝可的面包房',
-    mode: 'healing'
-  }
+  onShow() { focusService.current(Date.now()) },
+  onHide() { focusService.background(Date.now()) }
 })

@@ -1,70 +1,58 @@
-const { matchRecipe, rescueRecipe, buildStages } = require('../../domain/recipes')
-const { createSession, formatClock } = require('../../domain/focus-session')
+const focusService = require('../../services/focus-service')
+const focus = require('../../domain/focus-session')
 
 Page({
   data: {
-    session: null,
-    recipe: null,
-    stageName: '准备原料',
-    clock: '00:30:00',
-    progress: 0,
-    showExit: false,
-    rescue: null,
-    paused: false,
-    pauseAvailable: false,
-    finished: false
+    session: null, recipe: null, stageName: '准备原料', stageType: 'focus',
+    clock: '00:30:00', stageClock: '00:05:00', progress: 0,
+    showExit: false, rescue: null, paused: false, breakActive: false,
+    pauseAvailable: false, finished: false, failed: false
   },
-  onLoad(query) {
-    const minutes = Math.max(30, Number(query.minutes) || 30)
-    const recipe = matchRecipe(minutes)
-    const stages = buildStages(recipe, minutes)
-    const session = createSession(minutes, recipe, stages)
-    this.setData({ session, recipe, clock: formatClock(minutes * 60) })
-    this.timer = setInterval(() => this.tick(), 1000)
+  onLoad() {
+    this.refresh()
+    this.timer = setInterval(() => this.refresh(), 1000)
   },
+  onShow() { if (this.loadedOnce) this.refresh(); this.loadedOnce = true },
+  onHide() { focusService.background(Date.now()) },
   onUnload() { clearInterval(this.timer) },
-  tick() {
-    if (this.data.paused || this.data.finished || this.data.showExit) return
-    const session = this.data.session
-    session.focusedSeconds += 1
-    session.elapsedSeconds += 1
-    const targetSeconds = session.targetMinutes * 60
-    const progress = Math.min(100, Math.floor(session.focusedSeconds / targetSeconds * 100))
-    const stageIndex = Math.min(session.stages.length - 1, Math.floor(progress / (100 / session.stages.length)))
-    const rescue = rescueRecipe(Math.floor(session.focusedSeconds / 60))
-    const pauseAvailable = Math.floor(session.focusedSeconds / 3600) > session.pauseCreditsUsed
+  refresh() {
+    const session = focusService.current(Date.now())
+    if (!session) return wx.reLaunch({ url: '/pages/home/home' })
+    const stage = focus.getCurrentStage(session)
+    const remainingFocusSeconds = Math.max(0, (session.targetFocusMs - session.focusedMs) / 1000)
+    const remainingStageSeconds = stage ? Math.max(0, stage.minutes * 60 - session.stageElapsedMs / 1000) : 0
+    const progress = Math.floor(focus.getFocusProgress(session) * 100)
+    const rescue = focusService.rescuePreview(session)
+    const finished = session.status === focus.SESSION_STATUS.COMPLETED
+    const failed = session.status === focus.SESSION_STATUS.ABANDONED
     this.setData({
-      session,
-      progress,
-      stageName: session.stages[stageIndex].name,
-      clock: formatClock(targetSeconds - session.focusedSeconds),
-      rescue,
-      pauseAvailable
+      session, recipe: session.recipe, stageName: stage ? stage.name : (finished ? '新鲜出炉' : '制作停止'),
+      stageType: stage && stage.focus ? 'focus' : 'break',
+      clock: focus.formatClock(remainingFocusSeconds), stageClock: focus.formatClock(remainingStageSeconds),
+      progress, rescue, paused: session.status === focus.SESSION_STATUS.MANUAL_PAUSE,
+      breakActive: session.status === focus.SESSION_STATUS.RECIPE_BREAK,
+      pauseAvailable: focus.availablePauseCredits(session) > 0, finished, failed
     })
-    if (session.focusedSeconds >= targetSeconds) this.complete()
-  },
-  complete() {
-    clearInterval(this.timer)
-    this.setData({ finished: true, progress: 100, clock: '00:00:00', stageName: '新鲜出炉' })
+    if (finished || failed) clearInterval(this.timer)
   },
   askExit() { this.setData({ showExit: true }) },
   continueFocus() { this.setData({ showExit: false }) },
   abandon() {
+    const session = focusService.abandon(Date.now())
     clearInterval(this.timer)
-    const failed = this.data.progress < 50 ? '没发好的面团' : '没烤好的面包'
-    wx.showModal({ title: '贝可收好了', content: `${failed}已经放进猫粮篮。`, showCancel: false, success: () => wx.reLaunch({ url: '/pages/home/home' }) })
+    wx.showModal({ title: '贝可收好了', content: `${session.failureItem}已经放进待结算区。`, showCancel: false,
+      success: () => { focusService.archiveTerminal(session); wx.reLaunch({ url: '/pages/home/home' }) } })
   },
   rescue() {
     if (!this.data.rescue) return
-    clearInterval(this.timer)
-    wx.showModal({ title: '快速出炉', content: `消耗 1 张券，抢救出一份${this.data.rescue.name}。它可正常出售，但不进入标准图鉴。`, showCancel: false, success: () => wx.reLaunch({ url: '/pages/home/home' }) })
+    wx.showModal({ title: '快速出炉规则待确认', content: `建议消耗 1 张券，获得${this.data.rescue.name}；正常售价出售，但不解锁图鉴。当前骨架暂不执行结算。`, showCancel: false })
   },
   pause() {
     if (!this.data.pauseAvailable) return wx.showToast({ title: '每专注满 1 小时可暂停一次', icon: 'none' })
-    const session = this.data.session
-    session.pauseCreditsUsed += 1
-    this.setData({ paused: true, session, pauseAvailable: false })
+    focusService.pause(Date.now()); this.refresh()
   },
-  resume() { this.setData({ paused: false }) },
+  resume() { focusService.resume(Date.now()); this.refresh() },
+  skipBreak() { focusService.skipBreak(Date.now()); this.refresh() },
+  finishResult() { const session = this.data.session; focusService.archiveTerminal(session); wx.reLaunch({ url: '/pages/home/home' }) },
   goHome() { wx.reLaunch({ url: '/pages/home/home' }) }
 })

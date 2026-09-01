@@ -1,1 +1,7 @@
-<view class="page"><view class="topbar"><view class="back-home" bindtap="back">‹ 返回</view><view class="grow"></view><view class="coin-pill">● 1,280</view></view><view class="title">图鉴</view><scroll-view scroll-x="true"><view class="chips"><button wx:for="{{tabs}}" wx:key="*this" class="chip {{tab === item ? 'active' : ''}}" data-tab="{{item}}" bindtap="setTab">{{item}}</button></view></scroll-view><view wx:if="{{tab === '成品橱窗'}}" class="grid-two"><view class="card bread" wx:for="{{recipes}}" wx:key="minutes"><view class="bread-icon">◒</view><view class="section-title">{{item.name}}</view><view class="muted">{{index < 2 ? '已解锁' : '尚未解锁'}} · ● {{item.price}}</view></view></view><view wx:else class="empty">这一页会收藏你与贝可共同获得的故事。</view></view>
+<view class="page">
+  <view class="topbar"><view class="back-home" bindtap="back">‹ 返回</view><view class="grow"></view><view class="coin-pill">● {{coins}}</view></view>
+  <view class="title">图鉴</view>
+  <scroll-view scroll-x="true"><view class="chips"><button wx:for="{{tabs}}" wx:key="*this" class="chip {{tab === item ? 'active' : ''}}" data-tab="{{item}}" bindtap="setTab">{{item}}</button></view></scroll-view>
+  <view wx:if="{{tab === '成品橱窗'}}" class="grid-two"><view class="card bread" wx:for="{{recipes}}" wx:key="minutes"><view class="bread-icon">◒</view><view class="section-title">{{item.name}}</view><view class="muted">{{index < 2 ? '已解锁' : '尚未解锁'}} · ● {{item.price}}</view></view></view>
+  <view wx:else class="empty">这一页会收藏你与贝可共同获得的故事。</view>
+</view>
