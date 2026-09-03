@@ -1,7 +1,8 @@
 <view class="page">
-  <view class="topbar"><view class="back-home" bindtap="back">‹ 返回</view><view class="grow"></view><view class="coin-pill">● {{coins}}</view></view>
-  <view class="title">图鉴</view>
+  <view class="topbar"><view class="back-home" bindtap="back">‹ 返回</view><view class="grow"></view><view class="coin-pill">● {{coins}}</view></view><view class="title">图鉴与收藏</view>
   <scroll-view scroll-x="true"><view class="chips"><button wx:for="{{tabs}}" wx:key="*this" class="chip {{tab === item ? 'active' : ''}}" data-tab="{{item}}" bindtap="setTab">{{item}}</button></view></scroll-view>
-  <view wx:if="{{tab === '成品橱窗'}}" class="grid-two"><view class="card bread" wx:for="{{recipes}}" wx:key="minutes"><view class="bread-icon">◒</view><view class="section-title">{{item.name}}</view><view class="muted">{{index < 2 ? '已解锁' : '尚未解锁'}} · ● {{item.price}}</view></view></view>
-  <view wx:else class="empty">这一页会收藏你与贝可共同获得的故事。</view>
+  <view wx:if="{{tab === '烘焙图鉴'}}" class="grid-two"><view class="card bread" wx:for="{{recipes}}" wx:key="minutes"><view class="bread-icon">◒</view><view class="section-title">{{item.name}}</view><view class="muted">食谱已拥有 · {{catalog.completedRecipes[item.name] ? '图鉴已点亮' : '等待首次完成'}}</view><view class="muted">累计制作 {{catalog.productionCounts[item.name] || 0}}</view></view></view>
+  <view wx:elif="{{tab === '装扮'}}"><view class="card"><view class="section-title">购买的装扮</view><view class="muted">墙纸、桌面、烤箱、包装袋和包装盒会陈列在这里。</view></view></view>
+  <view wx:elif="{{tab === '小物件'}}"><view class="card"><view class="section-title">失败品</view><view class="row between"><view>没发好的面团</view><view>× {{inventory.failedBakes['没发好的面团'] || 0}}</view></view><view class="divider"></view><view class="row between"><view>没烤好的面包</view><view>× {{inventory.failedBakes['没烤好的面包'] || 0}}</view></view></view><view class="card"><view class="section-title">居民礼物</view><view class="muted">宝石、石头、粘土、种子、花和向日葵。</view></view></view>
+  <view wx:else class="empty">这一页会逐渐记录麦子星球的故事。</view>
 </view>

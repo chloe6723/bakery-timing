@@ -11,6 +11,7 @@
     <view class="home-title">贝可的面包房</view>
     <view class="quote">“今天，我们也让时间慢慢发酵吧。”</view>
   </view>
+  <button class="showcase-entry" style="position:absolute;z-index:3;right:28rpx;top:330rpx;padding:12rpx 18rpx;border:3rpx solid #76573d;border-radius:18rpx;background:#fff9eb;color:#4d3828;font-size:22rpx;font-weight:800;line-height:1.2" bindtap="openShowcase">售卖橱窗</button>
   <view class="picker-card">
     <scroll-view class="scroll-x" scroll-x="true">
       <view class="minute-row">

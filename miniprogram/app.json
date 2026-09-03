@@ -6,7 +6,8 @@
     "pages/market/market",
     "pages/catalog/catalog",
     "pages/settings/settings",
-    "pages/focus/focus"
+    "pages/focus/focus",
+    "pages/showcase/showcase"
   ],
   "window": {
     "navigationStyle": "custom",

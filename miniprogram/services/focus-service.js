@@ -1,4 +1,4 @@
-const { matchRecipe, rescueRecipe, buildStages } = require('../domain/recipes')
+const { matchRecipe, rescueRecipe, buildStages, buildPlanStages } = require('../domain/recipes')
 const focus = require('../domain/focus-session')
 const store = require('../store/app-store')
 
@@ -10,6 +10,14 @@ function start(targetMinutes, now = Date.now(), context = {}) {
   const session = focus.createSession(targetMinutes, recipe, buildStages(recipe, targetMinutes), now, user.mode, context)
   store.saveActiveSession(session)
   return session
+}
+function startPlan(order, now = Date.now()) {
+  const active = store.getActiveSession()
+  if (active && !focus.isTerminal(active)) return active
+  const user = store.getUser(); const items = order.items || []
+  const recipe = { name: '预约烘焙计划', price: items.reduce((sum, item) => sum + item.price, 0) }
+  const session = focus.createSession(order.minutes, recipe, buildPlanStages(items, order.minutes), now, user.mode, { orderId: order.id })
+  session.planItems = items; store.saveActiveSession(session); return session
 }
 function current(now = Date.now()) {
   const active = store.getActiveSession(); if (!active) return null
@@ -30,4 +38,4 @@ function archiveTerminal(session) {
   store.appendSessionHistory(session)
   store.clearActiveSession()
 }
-module.exports = { start, current, background, pause, resume, skipBreak, abandon, rescuePreview, archiveTerminal }
+module.exports = { start, startPlan, current, background, pause, resume, skipBreak, abandon, rescuePreview, archiveTerminal }

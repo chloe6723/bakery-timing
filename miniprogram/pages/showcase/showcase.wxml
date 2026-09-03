@@ -1,0 +1,7 @@
+<view class="page">
+  <view class="topbar"><view class="back-home" bindtap="back">‹ 面包房</view><view class="grow"></view><view class="coin-pill">现货 {{total}}</view></view>
+  <view class="title">售卖橱窗</view><view class="subtitle">前八种优先展示，折叠成品同样可以被居民购买。</view>
+  <view class="shelf-grid"><view class="card shelf-item" wx:for="{{featured}}" wx:key="name"><view class="bread-icon">◒</view><view class="shelf-name">{{item.name}}</view><view class="row between"><view class="tag">× {{item.quantity}}</view><button class="order-button" data-index="{{index}}" bindtap="moveUp">↑</button></view></view><button wx:if="{{more.length}}" class="card more-button" bindtap="toggleMore">＋<text>{{more.length}} 种</text></button></view>
+  <view wx:if="{{expanded}}" class="card"><view class="row between extra" wx:for="{{more}}" wx:key="name"><view>{{item.name}}</view><view>× {{item.quantity}}</view></view></view>
+  <view class="section-title waiting-title">等待收银的居民</view><view wx:if="{{!queue.length}}" class="empty">橱窗安静地等待下一位客人。</view><view class="card" wx:for="{{queue}}" wx:key="id"><view class="row between"><view><view>{{item.customer}}</view><view class="muted">想买 {{item.bread}}</view></view><button class="primary-button checkout" data-id="{{item.id}}" bindtap="checkout">收银</button></view></view>
+</view>

@@ -28,6 +28,7 @@ Page({
     const failed = session.status === focus.SESSION_STATUS.ABANDONED
     this.setData({
       session, recipe: session.recipe, stageName: stage ? stage.name : (finished ? '新鲜出炉' : '制作停止'),
+      stageRecipeName: stage && stage.recipeName ? stage.recipeName : session.recipe.name,
       stageType: stage && stage.focus ? 'focus' : 'break',
       clock: focus.formatClock(remainingFocusSeconds), stageClock: focus.formatClock(remainingStageSeconds),
       progress, rescue, paused: session.status === focus.SESSION_STATUS.MANUAL_PAUSE,
@@ -68,7 +69,7 @@ Page({
     if (session.status === focus.SESSION_STATUS.ABANDONED) settlementService.abandon(session, Date.now())
     const result = session.status === focus.SESSION_STATUS.COMPLETED ? settlementService.complete(session, Date.now()) : null
     if (result && result.delivery && result.delivery.mode === 'auto') {
-      return wx.showModal({ title: '鸽子已经出发', content: `包裹由信使鸽送往客户家，订单收入 ${result.delivery.coins} 金币。`, showCancel: false,
+      return wx.showModal({ title: '鸽子已经出发', content: `包裹由信使鸽送往客户家，订单收入 ${result.delivery.coins} 金币。${result.delivery.decoration ? `\n客户还送来小装饰：${result.delivery.decoration}` : ''}`, showCancel: false,
         success: () => { focusService.archiveTerminal(session); wx.reLaunch({ url: '/pages/home/home' }) } })
     }
     if (result && result.delivery && result.delivery.mode === 'manual') {

@@ -53,7 +53,7 @@ const rescueResult = settlement.rescue(active, recipes.matchRecipe(60), 5000)
 assert.equal(rescueResult.ok, true)
 assert.equal(rescueResult.tickets, 1)
 assert.equal(store.getInventory().breads['日式红豆包'], 1)
-assert.equal(store.getCatalog().unlockedRecipes['日式红豆包'], undefined)
+assert.equal(store.getCatalog().completedRecipes['日式红豆包'], undefined)
 
 settings.updateSettings({ deliveryMode: 'auto' })
 orders.update('A-021', { status: 'PENDING' })

@@ -42,4 +42,15 @@ function recipeTimelineMinutes(stages) {
   return stages.reduce((sum, stage) => sum + stage.minutes, 0)
 }
 
-module.exports = { RECIPES, matchRecipe, rescueRecipe, buildStages, recipeTimelineMinutes }
+function buildPlanStages(items, targetMinutes) {
+  const stages = []
+  let usedMinutes = 0
+  items.forEach((item, planItemIndex) => {
+    buildStages(item, item.minutes).forEach(stage => stages.push({ ...stage, planItemIndex, recipeName: item.name }))
+    usedMinutes += item.minutes
+  })
+  if (targetMinutes > usedMinutes) stages.push({ key: 'shop-tidy', name: '整理店铺', minutes: targetMinutes - usedMinutes, focus: true, planItemIndex: items.length, recipeName: '面包房' })
+  return stages
+}
+
+module.exports = { RECIPES, matchRecipe, rescueRecipe, buildStages, buildPlanStages, recipeTimelineMinutes }

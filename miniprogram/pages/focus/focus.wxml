@@ -1,5 +1,5 @@
 <view class="focus-page">
-  <view class="focus-top"><view>{{recipe.name}}</view><view class="stage">{{stageName}} · 本阶段 {{stageClock}}</view></view>
+  <view class="focus-top"><view>{{stageRecipeName}}</view><view class="stage">{{stageName}} · 本阶段 {{stageClock}}</view></view>
   <view class="progress"><view style="width:{{progress}}%"></view></view>
   <view class="focus-center">
     <view class="bakeco"><view class="ear left"></view><view class="ear right"></view><view class="face">ʕ•ᴥ•ʔ</view><view class="hat">B</view></view>

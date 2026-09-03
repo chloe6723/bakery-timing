@@ -3,11 +3,19 @@ const focusService = require('../../services/focus-service')
 const economyService = require('../../services/economy-service')
 const focusDomain = require('../../domain/focus-session')
 const settlementService = require('../../services/settlement-service')
+const retailService = require('../../services/retail-service')
+const settingsService = require('../../services/settings-service')
 
 Page({
   data: { coins: 1280, minutes: 30, recipe: RECIPES[0], recipes: RECIPES },
   onShow() {
     const active = focusService.current(Date.now())
+    const dailyVisit = retailService.scheduleDailyVisit(Date.now())
+    const settings = settingsService.get().settings
+    if (settings.operationMode === 'managed') {
+      if (dailyVisit) retailService.checkout(dailyVisit.id, Date.now() + 1)
+      retailService.runManagedSale(Date.now() + 2)
+    }
     this.setData({ coins: economyService.balance().coins })
     if (active && !focusDomain.isTerminal(active)) {
       setTimeout(() => wx.navigateTo({ url: '/pages/focus/focus?resume=1' }), 50)
@@ -30,6 +38,7 @@ Page({
   openLedger() { wx.switchTab({ url: '/pages/ledger/ledger' }) },
   openOrders() { wx.switchTab({ url: '/pages/orders/orders' }) },
   openMarket() { wx.switchTab({ url: '/pages/market/market' }) },
+  openShowcase() { wx.navigateTo({ url: '/pages/showcase/showcase' }) },
   startFocus() {
     focusService.start(this.data.minutes, Date.now())
     wx.navigateTo({ url: '/pages/focus/focus?resume=1' })
